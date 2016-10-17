@@ -3,13 +3,19 @@
 #include <string.h>
 
 /* max number of tel numbers */
-#define NMAX	100000
+#define NMAX	10000000
 
 /* ascii table */
 						/* @  A  B  C  D  E  F  G  H  I  J  K  L  M */
 const char cTable[27] = { 0, '2', '2', '2', '3', '3', '3', '4', '4', '4', '5', '5', '5', '6', \
 						/* N  O  P  Q  R  S  T  U  V  W  X  Y  Z */
 						'6', '6', '7', 0, '7', '7', '8', '8', '8', '9', '9', '9', 0 };
+
+/* number struct */
+typedef struct NumArrays {
+	int iTel;
+	int iCount;
+} NumArray;
 
 char alpha2num(char cIn) {
 	return cTable[cIn - '@'];
@@ -24,15 +30,16 @@ int main() {
 	char cR[16];
 	/* number only string */
 	char cRn[8];
-	/* number array */
-	int iNum[NMAX];
+	/* number struct */
+	NumArray numArray[NMAX];
 
 	/* read number of row */
 	scanf("%d", &iRN);
 
 	/* initialization */
 	for(i=0; i<NMAX; i++) {
-		iNum[i] = 0;
+		numArray[i].iTel = i;
+		numArray[i].iCount = 0;
 	}
 
 	/* iterating rows */
@@ -64,7 +71,7 @@ int main() {
 		cRn[k] = 0;
 
 		/* increment relevant element in the number array */
-		++iNum[atoi(cRn)];
+		++numArray[atoi(cRn)].iCount;
 
 
 	}
