@@ -15,14 +15,18 @@ int main() {
 	int i, j, k;
 	/* number of row */
 	int iRN;
+	/* row string */
+	char cR[15];
 
 	/* read number of row */
 	scanf("%d", &iRN);
 
 printf("Alha %d\n", alpha2num('P'));
-	printf("IS D %d\n", iRN);
+	
+	/* iterating rows */
+	while(scanf("%s", &cR) == 1) {
+		printf("--> %s\n", cR);
 
-	for(i=0; i<10; i++) {
 
 	}
 
