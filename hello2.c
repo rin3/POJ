@@ -23,9 +23,11 @@ int main() {
 
 	/* read number of row */
 	scanf("%d", &iRN);
+printf("%d wors\n", iRN);
 
 	/* iterating rows */
 	for(i=0; i<iRN; i++) {
+		printf("%d times iteration\n", i);
 		/* cRn index */
 		k=0;
 
@@ -33,22 +35,6 @@ int main() {
 		scanf("%s", &cR);
 		printf("%d %s", i, cR);
 
-		for(j=0; j<strlen(cR); j++) {
-			if(cR[j] == '-') {
-				/* skip hyphen */
-				continue;
-			} else {
-				if('A' <= cR[j] && cR[j] <= 'Z') {
-					/* converting 'A' to '2' etc. */
-					cRn[k] = alpha2num(cR[j]);
-				} else {
-					/* if not, pure numbers */
-					cRn[k] = cR[j];
-				}
-				/* increment cRn index */
-				k++;
-			}	
-		}
 		/* terminate cRn */
 		cRn[k] = 0;
 
