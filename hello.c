@@ -1,5 +1,9 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+
+/* max number of tel numbers */
+#define NMAX	100000
 
 /* ascii table */
 						/* @  A  B  C  D  E  F  G  H  I  J  K  L  M */
@@ -20,9 +24,16 @@ int main() {
 	char cR[16];
 	/* number only string */
 	char cRn[8];
+	/* number array */
+	int iNum[NMAX];
 
 	/* read number of row */
 	scanf("%d", &iRN);
+
+	/* initialization */
+	for(i=0; i<NMAX; i++) {
+		iNum[i] = 0;
+	}
 
 	/* iterating rows */
 	for(i=0; i<iRN; i++) {
@@ -31,8 +42,8 @@ int main() {
 
 		/* read row */
 		scanf("%s", &cR);
-		printf("%d %s", i, cR);
 
+		/* translate into a simple string number */
 		for(j=0; j<strlen(cR); j++) {
 			if(cR[j] == '-') {
 				/* skip hyphen */
@@ -52,9 +63,12 @@ int main() {
 		/* terminate cRn */
 		cRn[k] = 0;
 
-		printf(" --> %s\n", cRn);
+		/* increment relevant element in the number array */
+		++iNum[atoi(cRn)];
+
 
 	}
+
 
 	return 0;
 }
