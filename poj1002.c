@@ -30,7 +30,7 @@ void printNoDupl() {
 void translate2String(char* str, int n) {
 	int i;
 	/* convert int to string */
-	sprintf(str, "%d", n);
+	sprintf(str, "%07d", n);
 	/* insert hyphen */
 	for(i=strlen(str); i>=3; i--) {
 		str[i+1] = str[i];
