@@ -52,12 +52,11 @@ void printReport(int iTel, int iDup) {
 
 int main() {
 	/* iterators */
-	int i = 0;
-	int j = 0;
+	int i, j, k;
 	/* number of row */
 	int iRN;
-	/* stdin iterator */
-	char c;
+	/* row string */
+	char cR[16];
 	/* number only string */
 	char cRn[8];
 	/* number struct */
@@ -69,41 +68,36 @@ int main() {
 
 	/* read number of row */
 	scanf("%d", &iRN);
-	/* throw away an LF after the 1st line */
-	c = getchar();
 
 	/* iterating rows */
-	while((c = getchar()) != EOF) {
-		if(c == '\n') {
-			/* found line feed */
-			/* terminate cRn string */
-			cRn[i] = 0;
-			/* store in the num array */
-			numArray[j] = atoi(cRn);
-			/* reset cRn index */
-			i = 0;
-			/* increment numArray index */
-			j++;
-		} else if(c == '-') {
-			/* skip hyphen */
-			continue;
-		} else {
-			if('A' <= c && c <= 'Z') {
-				/* converting 'A' to '2' etc. */
-				cRn[i] = alpha2num(c);
+	for(i=0; i<iRN; i++) {
+		/* cRn index */
+		k=0;
+		/* read row */
+		scanf("%s", (char*)&cR);
+
+		/* translate into a simple string number */
+		for(j=0; j<(int)strlen(cR); j++) {
+			if(cR[j] == '-') {
+				/* skip hyphen */
+				continue;
 			} else {
-				/* if not, pure numbers */
-				cRn[i] = c;
-			}
-			/* increment cRn index */
-			i++;
+				if('A' <= cR[j] && cR[j] <= 'Z') {
+					/* converting 'A' to '2' etc. */
+					cRn[k] = alpha2num(cR[j]);
+				} else {
+					/* if not, pure numbers */
+					cRn[k] = cR[j];
+				}
+				/* increment cRn index */
+				k++;
+			}	
 		}
+		/* terminate cRn */
+		cRn[k] = 0;
+		/* store in the num array */
+		numArray[i] = atoi(cRn);
 	}
-	/* reached EOF, now do the last line */
-	/* terminate cRn string */
-	cRn[i] = 0;
-	/* store in the num array */
-	numArray[j] = atoi(cRn);
 
 	/* sort number array */
 	qsort(numArray, iRN, sizeof(int), cmpNumArray);
