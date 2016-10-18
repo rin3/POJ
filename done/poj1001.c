@@ -1,3 +1,5 @@
+/* POJ 1001 */
+
 #include <stdio.h>
 #include <string.h>
 

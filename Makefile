@@ -1,13 +1,13 @@
 #CFLAGS = -Wall -Wextra -std=c89 -pedantic -Wmissing-prototypes -Wstrict-prototypes -Wold-style-definition
 CFLAGS = -Wall -Wextra -std=c89 -pedantic
 
-all: hello.exe
+all: poj.exe
 
-hello.exe: hello.o
+poj.exe: main.o
 	gcc -o $@ $< $(CFLAGS)
   
-hello.o: hello.c
+main.o: main.c
 	gcc -c $< $(CFLAGS)
   
 clean:
-	rm hello.o hello.exe
+	rm main.o poj.exe

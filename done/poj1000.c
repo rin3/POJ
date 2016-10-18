@@ -1,3 +1,5 @@
+/* POJ 1000 */
+
 #include <stdio.h>
 
 int main() {
