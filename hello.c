@@ -40,6 +40,16 @@ void translate2String(char* str, int n) {
 	return;
 }
 
+void printReport(int iTel, int iDup) {
+	/* string buffer */
+	char strTel[9];
+
+	translate2String(strTel, iTel);
+	printf("%s %d\n", strTel, iDup+1);					
+
+	return;
+}
+
 int main() {
 	/* iterators */
 	int i, j, k;
@@ -55,8 +65,6 @@ int main() {
 	int iDupFlag = FALSE;
 	/* number of duplicates for each number */
 	int iDup = 0;
-	/* string buffer */
-	char strNum[9];
 
 	/* read number of row */
 	scanf("%d", &iRN);
@@ -108,12 +116,15 @@ int main() {
 				iDupFlag = TRUE;
 				/* increment number of duplicates */
 				++iDup;
+				if(i==iRN-1) {
+					/* last bit */
+					printReport(numArray[i], iDup);
+				}
 			} else {
 				/* the num is different than the previous */
 				if(iDup != 0) {
-					/* was duplicates */
-					translate2String(strNum, numArray[i-1]);
-					printf("%s %d\n", strNum, iDup+1);
+					/* was duplicates, print */
+					printReport(numArray[i-1], iDup);
 					/* reset iDup */
 					iDup = 0;
 				} else {
