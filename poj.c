@@ -1,4 +1,4 @@
-/* POJ 1008 */
+/* POJ 10 */
 
 #include <stdio.h>
 
