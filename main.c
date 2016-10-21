@@ -74,33 +74,6 @@ void _printEdge(int _nWidth, unsigned char* _cE) {
     printf("\n\n");
 }
 
-void rowComplete(int _nWidth, unsigned char** _cR, unsigned char* _cE, int* pnRC) {
-    /* padding both sides of the 0th(new) image row */
-    _cR[0][0] = _cR[0][1];
-    _cR[0][_nWidth+1] = _cR[0][_nWidth];
-
-printf("rowComplete=%d\n", *pnRC);
-    /* if it's the very first row */
-    if(*pnRC == 1) {
-        /* yes, the 1st row */
-        /* shift twice to fill the matrix, but no computation */
-        shiftRows(_nWidth, _cR);
-        shiftRows(_nWidth, _cR);
-_printRow(_nWidth, _cR);
-    } else if(*pnRC >= 2) {
-        /* do computation */
-_printRow(_nWidth, _cR);
-        compEdge(_nWidth, _cR, _cE);
-        /* shifting up the rows for next iteration */
-        shiftRows(_nWidth, _cR);
-_printEdge(_nWidth, _cE);
-    }
-
-/* matrix processing */
-
-    return;
-}
-
 void printRow(int _nWidth, unsigned char* _cE, int* pnRun, unsigned char* pcVal, int* pnSkip) {
     int i;
 
@@ -134,6 +107,36 @@ void printRow(int _nWidth, unsigned char* _cE, int* pnRun, unsigned char* pcVal,
 
 }
 
+void rowComplete(int _nWidth, unsigned char** _cR, unsigned char* _cE, int* pnRC, int* pnRun, unsigned char* pcVal, int* pnSkip) {
+    /* padding both sides of the 0th(new) image row */
+    _cR[0][0] = _cR[0][1];
+    _cR[0][_nWidth+1] = _cR[0][_nWidth];
+
+printf("rowComplete=%d\n", *pnRC);
+    /* if it's the very first row */
+    if(*pnRC == 1) {
+        /* yes, the 1st row */
+        /* shift twice to fill the matrix, but no computation */
+        shiftRows(_nWidth, _cR);
+        shiftRows(_nWidth, _cR);
+_printRow(_nWidth, _cR);
+    } else if(*pnRC >= 2) {
+        /* do computation */
+_printRow(_nWidth, _cR);
+        compEdge(_nWidth, _cR, _cE);
+        /* print an edge row */
+        printRow(_nWidth, _cE, pnRun, pcVal, pnSkip);
+        /* shifting up the rows for next iteration */
+        shiftRows(_nWidth, _cR);
+
+_printEdge(_nWidth, _cE);
+    }
+
+/* matrix processing */
+
+    return;
+}
+
 int main() {
     /* iterators */
     int i;
@@ -160,6 +163,8 @@ int main() {
 
     /* read width */
     while(scanf("%d", &nWidth) == 1) {
+        /* print width */
+        printf("%d\n", nWidth);
         /* see if end of input */
         if(nWidth == 0) {
             break;
@@ -196,9 +201,13 @@ int main() {
                 shiftRows(nWidth, cR);
 _printRow(nWidth, cR);
                 compEdge(nWidth, cR, cE);
+                /* print the last edge row */
+                printRow(nWidth, cE, &nRun, &cVal, &nSkip);
 _printEdge(nWidth, cE);
-
-/* do something */
+                /* print the final pair in the last row */
+                printf("%d %d\n", cVal, nRun);
+                /* print the end marker, ie. "0 0" */
+                printf("%d %d\n", nV, nL);
 
                 break;
             }
@@ -236,7 +245,7 @@ _printEdge(nWidth, cE);
                     nL = 0;
                     /* jump to row processing */
                     ++nRC;
-                    rowComplete(nWidth, cR, cE, &nRC);
+                    rowComplete(nWidth, cR, cE, &nRC, &nRun, &cVal, &nSkip);
                 } else {
                     /* nWidth < nIdx2Fil + nL */
                     /* overflow */
@@ -250,7 +259,7 @@ _printEdge(nWidth, cE);
                     nIdx2Fil = 0;
                     /* jump to row processing */
                     ++nRC;
-                    rowComplete(nWidth, cR, cE, &nRC);
+                    rowComplete(nWidth, cR, cE, &nRC, &nRun, &cVal, &nSkip);
                 }
             }
         }
