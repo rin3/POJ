@@ -1,25 +1,22 @@
 #include <stdio.h>
+#include <stdlib.h>
 
-int nar[4][2] = { {1,2},{3,4},{5,6},{7,8} };
+void routeA(char** _cTT) {
+printf("in route\n");
+_cTT[1][1] = 90;
+printf("%d \n", _cTT[1][1]);
+    return;
+}
 
 
 int main() {
-    int i,j;
+    int i;
+    char* cTT[3];
 
-    for(i=0; i<4; i++) {
-        for(j=0; j<2; j++) {
-            printf("nar[%d][%d] = %d\n", i,j, nar[i][j]);
-        }
+    for(i=0; i<3; i++) {
+        cTT[i] = (char*)malloc(sizeof(char) * 10);
     }
-
-    printf("nar = %d\n", nar);
-    printf("nar[0] = %d\n", nar[0]);
-    printf("*nar[0] = %d\n", *nar[0]);
-    printf("nar[0][0] = %d\n", nar[0][0]);
-    printf("nar[1] = %d\n", nar[1]);
-    printf("*nar[1] = %d\n", *nar[1]);
-    printf("nar[1][0] = %d\n", nar[1][0]);
-    
+    routeA(cTT);
 
     return 0;
 }
