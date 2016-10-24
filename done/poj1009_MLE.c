@@ -76,7 +76,7 @@ void printRow(int _nWidth, unsigned char* _cE, int* pnRun, unsigned char* pcVal,
 				if(*pnSkip > 0) {
 					/* add back skip length */
 					*pnRun += _nWidth * *pnSkip;
-	/*				*pnSkip = 0;*/
+					*pnSkip = 0;
 				}
 				/* print an output line */
 				printf("%d %d\n", *pcVal, *pnRun);
@@ -89,6 +89,7 @@ void printRow(int _nWidth, unsigned char* _cE, int* pnRun, unsigned char* pcVal,
 
 }
 
+/* a single input row is completed */
 void rowComplete(int _nWidth, unsigned char** _cR, unsigned char* _cE, int* pnRC, int* pnRun, unsigned char* pcVal, int* pnSkip) {
 	/* padding both sides of the 0th(new) image row */
 	_cR[0][0] = _cR[0][1];
@@ -126,7 +127,8 @@ int main() {
 	/* RLE run length */
 	int nL;
 	/* skipped super long run length */
-	int nSkip;
+	/* current and the last */
+	int nSkip, nSkipLast;
 	/* row index to fill */
 	int nIdx2Fil;
 	/* row count per single image */
@@ -171,17 +173,16 @@ int main() {
 		/* reading a pair of RLE element */
 		while(scanf("%d %d", &nV, &nL)) {
 			if(nV == 0 && nL == 0) {
-printf("LL %d %d %d\n", nV, nL, nSkip);
 				/* was end of image */
 				/* shift a row and compute */
 				shiftRows(nWidth, cR);
 				compEdge(nWidth, cR, cE);
 				/* print the last edge row */
-				printRow(nWidth, cE, &nRun, &cVal, &nSkip);
+				printRow(nWidth, cE, &nRun, &cVal, &nSkipLast);
 				/* see if super long run length */
-				if(nSkip > 0) {
+				if(nSkipLast > 0) {
 					/* add back skip length */
-					nRun += nWidth * nSkip;
+					nRun += nWidth * nSkipLast;
 				}
 				/* print the final pair in the last row */
 				printf("%d %d\n", cVal, nRun);
@@ -197,8 +198,11 @@ printf("LL %d %d %d\n", nV, nL, nSkip);
 				/* shorten run length and set skip length */
 				nSkip = (int)(nL / nWidth) - 3;
 				nL -= nSkip * nWidth;
+			} else {
+				/* not super long run length */
+				nSkip = 0;
 			}
-printf("KK %d %d %d\n", nV, nL, nSkip);
+
 			/* do job until run length is fully populated */ 
 			while(nL) {
 				/* branching on the run length to the remainder */
@@ -224,7 +228,7 @@ printf("KK %d %d %d\n", nV, nL, nSkip);
 					nL = 0;
 					/* jump to row processing */
 					++nRC;
-					rowComplete(nWidth, cR, cE, &nRC, &nRun, &cVal, &nSkip);
+					rowComplete(nWidth, cR, cE, &nRC, &nRun, &cVal, &nSkipLast);
 				} else {
 					/* nWidth < nIdx2Fil + nL */
 					/* overflow */
@@ -238,9 +242,13 @@ printf("KK %d %d %d\n", nV, nL, nSkip);
 					nIdx2Fil = 0;
 					/* jump to row processing */
 					++nRC;
-					rowComplete(nWidth, cR, cE, &nRC, &nRun, &cVal, &nSkip);
+					rowComplete(nWidth, cR, cE, &nRC, &nRun, &cVal, &nSkipLast);
 				}
 			}
+
+			/* a single run length has done */
+			/* keep the last skip number */
+			nSkipLast = nSkip;
 		}
 		/* a single image is done */
 		/* freeing memory */
