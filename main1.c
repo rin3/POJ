@@ -139,39 +139,57 @@ int main() {
 		nV = -1;
 
 		/* initialize the last head */
-		nLastX = 0;
-		nLastY = 0;
-		/* initialize RLE pair index */
-		k = 0;
+		/* as the non-existent last pixel just before 0, 0 */
+		nLastX = nWidth - 1;
+		nLastY = -1;
 
 		/* create output image */
-		for(j = 0; j < nHeight; j++) {
-			for(i = 0; i < nWidth; i++) {
+		for(k = 0; k < nPair; k++) {
+			if(RLP[k].nHeadY - nLastY > 3) {
 
+			}
+			
+			/* finish the first line */
+			if(nLaxtX == nWidth - 1) 
 
+			
 
+			/* in between */
+			/* last line */
 
-				/* compute edge pixel value */
-				nEV = getEdge(i,j, RLP, nWidth, nHeight);
-				if(nEV == nV) {
-					/* value same as before */
-					++nL;
+			for(j = nLastY; j <= RLP[k].nHeadY; j++) {
+				if(nLastX == nWidth - 1) {
+					/* nLastX is at the right most end */
 					continue;
 				}
+				for(i =0; i < nWidth; i++) {
+					/* compute edge pixel value */
+					nEV = getEdge(i,j, RLP, nWidth, nHeight);
+					if(nEV == nV) {
+						/* value same as before */
+						++nL;
+						continue;
+					}
 
-				/* now edge value is different than before */
+					/* now edge value is different than before */
 
-				/* unless very first of the image */
-				if(nL > 0) {
-					/* print a single line of result */
-					printf("%d %d\n", nV, nL);
+					/* unless very first of the image */
+					if(nL > 0) {
+						/* print a single line of result */
+						printf("%d %d\n", nV, nL);
+					}
+
+					/* set new variables */
+					nL = 1;
+					nV = nEV;
 				}
-
-				/* set new variables */
-				nL = 1;
-				nV = nEV;
 			}
+
+
 		}
+
+
+
 		/* print the final line of output */
 		printf("%d %d\n", nV, nL);
 		printf("0 0\n");

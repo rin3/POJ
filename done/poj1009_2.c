@@ -1,4 +1,6 @@
 /* POJ 1009 */
+/* straight forward approach
+   only works with sample 1 & 3 */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -80,8 +82,6 @@ int main() {
 	int nPair;
 	/* computed edge value */
 	int nEV;
-	/* coord of the last head */
-	int nLastX, nLastY;
 
 	/* read input */
 	while(scanf("%d", &nWidth) == 1) {
@@ -138,19 +138,9 @@ int main() {
 		/* reset edge valus as non-existent */
 		nV = -1;
 
-		/* initialize the last head */
-		nLastX = 0;
-		nLastY = 0;
-		/* initialize RLE pair index */
-		k = 0;
-
 		/* create output image */
 		for(j = 0; j < nHeight; j++) {
 			for(i = 0; i < nWidth; i++) {
-
-
-
-
 				/* compute edge pixel value */
 				nEV = getEdge(i,j, RLP, nWidth, nHeight);
 				if(nEV == nV) {
