@@ -1,4 +1,8 @@
 /* POJ 1009 */
+/* preparation for long runs
+   introduction of head coord
+   yet no real long run codes written
+   only works with sample 1 & 3 */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -64,9 +68,46 @@ int getEdge(int X, int Y, RLEP* _RLP, int _nWidth, int _nHeight) {
 	return nDiff;
 }
 
+/* produce output lines */
+void prodOutput(int nXi, int nXe, int nYi, int nYe, \
+RLEP* _RLP, int _nWidth, int _nHeight, int* pnV, int* pnL) {
+	/* iterators */
+	int i, j;
+	/* computed edge value */
+	int nEV;
+
+	/* iterate over certain range according to input parameters */
+	for(j = nYi; j <= nYe; j++) {
+		for(i = nXi; i <= nXe; i++) {
+
+			/* compute edge pixel value */
+			nEV = getEdge(i, j, _RLP, _nWidth, _nHeight);
+			if(nEV == *pnV) {
+				/* value same as before */
+				++(*pnL);
+				continue;
+			}
+
+			/* now edge value is different than before */
+
+			/* unless very first of the image */
+			if(*pnL > 0) {
+				/* print a single line of result */
+				printf("%d %d\n", *pnV, *pnL);
+			}
+
+			/* set new variables */
+			*pnL = 1;
+			*pnV = nEV;
+		}
+	}
+	
+	return;
+}
+
 int main() {
 	/* iterators */
-	int i, j, k;
+	int i;
 	/* image width and height */
 	/* nHeight also keeps track of total pixel length */
 	int nWidth, nHeight;
@@ -78,8 +119,6 @@ int main() {
 	RLEP RLP[1000];
 	/* number of RLE pairs */
 	int nPair;
-	/* computed edge value */
-	int nEV;
 	/* coord of the last head */
 	int nLastX, nLastY;
 
@@ -131,7 +170,7 @@ int main() {
 		/* compute image height */
 		nHeight /= nWidth;
 
-		/* processing of the output image */
+		/* processing of an output image */
 
 		/* reset run length */
 		nL = 0;
@@ -139,56 +178,47 @@ int main() {
 		nV = -1;
 
 		/* initialize the last head */
-		/* as the non-existent last pixel just before 0, 0 */
-		nLastX = nWidth - 1;
-		nLastY = -1;
+		nLastX = -1;
+		nLastY = 0;
 
-		/* create output image */
-		for(k = 0; k < nPair; k++) {
-			if(RLP[k].nHeadY - nLastY > 3) {
+		/* iterate over RLE pairs */
+		for(i = 0; i < nPair; i++) {
 
+			/* first line */
+			if(nLastX < nWidth - 1) {
+				/* last head is NOT at the end of a line */
+				if(RLP[i].nHeadY == nLastY) {
+					/* this run is on a single line */
+					prodOutput(nLastX + 1, RLP[i].nHeadX, nLastY, nLastY, \
+					RLP, nWidth, nHeight, &nV, &nL);
+				} else {
+					/* this run is over more than one line */
+					/* fill till the end of a line */
+					prodOutput(nLastX + 1, nWidth - 1, nLastY, nLastY, \
+					RLP, nWidth, nHeight, &nV, &nL);
+				}
+			} else {
+				/* nLastX == nWidth - 1 */
+				/* last head IS at the end of a line */
 			}
-			
-			/* finish the first line */
-			if(nLaxtX == nWidth - 1) 
 
-			
+			/* lines in between */
+			if(RLP[i].nHeadY >  nLastY + 1) {
+				/* there exist lines in between */
+				prodOutput(0, nWidth - 1, nLastY + 1, RLP[i].nHeadY - 1, \
+				RLP, nWidth, nHeight, &nV, &nL);
+			}
 
-			/* in between */
 			/* last line */
-
-			for(j = nLastY; j <= RLP[k].nHeadY; j++) {
-				if(nLastX == nWidth - 1) {
-					/* nLastX is at the right most end */
-					continue;
-				}
-				for(i =0; i < nWidth; i++) {
-					/* compute edge pixel value */
-					nEV = getEdge(i,j, RLP, nWidth, nHeight);
-					if(nEV == nV) {
-						/* value same as before */
-						++nL;
-						continue;
-					}
-
-					/* now edge value is different than before */
-
-					/* unless very first of the image */
-					if(nL > 0) {
-						/* print a single line of result */
-						printf("%d %d\n", nV, nL);
-					}
-
-					/* set new variables */
-					nL = 1;
-					nV = nEV;
-				}
+			if(RLP[i].nHeadY > nLastY) {
+				prodOutput(0, RLP[i].nHeadX, RLP[i].nHeadY, RLP[i].nHeadY, \
+				RLP, nWidth, nHeight, &nV, &nL);
 			}
 
-
+			/* renew last head */
+			nLastX = RLP[i].nHeadX;
+			nLastY = RLP[i].nHeadY;
 		}
-
-
 
 		/* print the final line of output */
 		printf("%d %d\n", nV, nL);

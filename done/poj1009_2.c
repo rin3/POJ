@@ -142,7 +142,7 @@ int main() {
 		for(j = 0; j < nHeight; j++) {
 			for(i = 0; i < nWidth; i++) {
 				/* compute edge pixel value */
-				nEV = getEdge(i,j, RLP, nWidth, nHeight);
+				nEV = getEdge(i, j, RLP, nWidth, nHeight);
 				if(nEV == nV) {
 					/* value same as before */
 					++nL;
