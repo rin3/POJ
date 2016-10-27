@@ -6,18 +6,14 @@
 #define TRUE    1
 #define FALSE   0
 
-/* type for run length pairs */
-typedef struct RLP_Input_t {
-	int nVal;
-	int nLen;
-} RLP_Input;
+/* maximum number of RLPs */
+#define MAX_RLP		1000
 
-typedef struct RLP_Diff_t {
+/* type for run length pairs */
+typedef struct RLP_t {
 	int nVal;
 	int nLen;
-	/* direction */
-	int nDir;
-} RLP_Diff;
+} RLP;
 
 int main() {
 	/* iterators */
@@ -31,9 +27,12 @@ int main() {
 	int nPair;
 	/* RLP arrays */
 	/* input image */
-	RLP_Input tIn[1000];
+	RLP tIn[MAX_RLP];
 	/* differential array */
-	RLP_Diff tDif[2000];
+	RLP tDfL[2 * MAX_RLP];
+	RLP tDfR[2 * MAX_RLP];
+	RLP tDfU[2 * MAX_RLP];
+	RLP tDfD[2 * MAX_RLP];
 
 	/*--- start ---*/
 
@@ -71,6 +70,10 @@ int main() {
 
 		/* calc diffs */
 
+		/* to the right */
+		for(i = 0; i < nPair; i++) {
+
+		}
 
 
 
