@@ -1,7 +1,7 @@
 /* POJ 1009 */
 
 #include <stdio.h>
-/*#include <stdlib.h>*/
+#include <stdlib.h>
 
 #define TRUE    1
 #define FALSE   0
@@ -18,31 +18,26 @@ typedef struct RLP_t {
 int main() {
 	/* iterators */
 	int i;
-	/* image dimensions */
-	int nWidth;
+	/* image width */
+	int nW;
 	/* run length pair */
 	int nV;
 	int nL;
 	/* number of RLPs */
-	int nPair;
+	int nP;
 	/* RLP arrays */
 	/* input image */
 	RLP tIn[MAX_RLP];
-	/* differential array */
-	RLP tDfL[2 * MAX_RLP];
-	RLP tDfR[2 * MAX_RLP];
-	RLP tDfU[2 * MAX_RLP];
-	RLP tDfD[2 * MAX_RLP];
 
 	/*--- start ---*/
 
 	/* read input */
-	while(scanf("%d", &nWidth) == 1) {
+	while(scanf("%d", &nW) == 1) {
 
 		/* print output */
-		printf("%d\n", nWidth);
+		printf("%d\n", nW);
 
-		if(nWidth == 0) {
+		if(nW == 0) {
 			/* end of input */
 			break;
 		}
@@ -50,7 +45,7 @@ int main() {
 		/*--- processing of an image ---*/
 
 		/* reset number of RLPs */
-		nPair = 0;
+		nP = 0;
 
 		/* read RLPs into the array */
 		while(scanf("%d %d", &nV, &nL) == 2) {
@@ -61,23 +56,21 @@ int main() {
 			}
 
 			/* store elements in the array */
-			tIn[nPair].nVal = nV;
-			tIn[nPair].nLen = nL;
+			tIn[nP].nVal = nV;
+			tIn[nP].nLen = nL;
 
 			/* increment RLP array index */
-			++nPair;
+			++nP;
 		}
 
-		/* calc diffs */
+		/*
+			diffs -nW-1, -nW, -nW+1, -1, 0, 1, nW-1, nW, nW+1
 
-		/* to the right */
-		for(i = 0; i < nPair; i++) {
-			tDfR[i * 2].nVal = 0;
-			tDfR[i * 2].nLen = tIn[i].nLen - 1;
-			tDfR[i * 2 + 1].nVal =
-		}
+			add -nW-1 to the first element
+			add nW+1 to the last element 
 
-
+			find point of difference = max 1000
+		*/
 
 
 	}
