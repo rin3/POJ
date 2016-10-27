@@ -72,7 +72,9 @@ int main() {
 
 		/* to the right */
 		for(i = 0; i < nPair; i++) {
-
+			tDfR[i * 2].nVal = 0;
+			tDfR[i * 2].nLen = tIn[i].nLen - 1;
+			tDfR[i * 2 + 1].nVal =
 		}
 
 
