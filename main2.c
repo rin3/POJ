@@ -7,14 +7,12 @@
 #define FALSE   0
 
 /* maximum number of RLPs */
-#define MAX_PAIR	1000
-/* surroundings */
-#define SURROUND	8
+#define MAX_RLP		1000
 
 /* type for run length pairs */
 typedef struct RLP_t {
 	int nVal;
-	int nIdx;
+	int nLen;
 } RLP;
 
 int main() {
@@ -29,9 +27,7 @@ int main() {
 	int nP;
 	/* RLP arrays */
 	/* input image */
-	RLP tIn[MAX_PAIR];
-	/* surrounding pixels */
-	RLP tSr[SURROUND][MAX_PAIR];
+	RLP tIn[MAX_RLP];
 
 	/*--- start ---*/
 
