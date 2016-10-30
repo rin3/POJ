@@ -9,7 +9,7 @@
 /* maximum number of RLPs */
 #define MAX_PAIR	1000
 /* surroundings */
-#define BOX_SIZE	9
+#define SURROUNDING_PIXELS	8
 
 /* type for run length pairs */
 typedef struct RLP_t {
@@ -19,14 +19,6 @@ typedef struct RLP_t {
 	int nPos;
 } RLP;
 
-
-/* compare function for qsort */
-int compInt(const void* pa, const void* pb) {
-	/* simple integer comparison */
-	return (*(int*)pa - *(int*)pb);
-}
-
-/* main */
 int main() {
 	/* iterators */
 	int i, j;
@@ -37,10 +29,11 @@ int main() {
 	int nL;
 	/* number of RLPs */
 	int nPair;
-	/* RLP array */
+	/* RLP arrays */
+	/* input image */
 	RLP tIn[MAX_PAIR];
-	/* index array */
-	int nIdx[MAX_PAIR * BOX_SIZE];
+	/* surrounding pixels */
+	RLP tSr[SURROUNDING_PIXELS][MAX_PAIR];
 
 	/*--- start ---*/
 
@@ -77,42 +70,34 @@ int main() {
 				/* otherwise add up length for index */
 				tIn[nPair].nPos = nL + tIn[nPair - 1].nPos;
 			}
-
-			/* fill index array, w/input image, in segment 0 to (nPair-1) */
-			nIdx[nPair] = tIn[nPair].nPos;
 printf("- %d %d\n", tIn[nPair].nVal, tIn[nPair].nPos);
 			/* increment RLP array index */
 			++nPair;
 		}
 
-		/* fill index array w/surrounding pixels */
+		/* indexing surrounding pixels */
 		for(i = 0; i < nPair; i++) {
+			for(j = 0; j < SURROUNDING_PIXELS; j++) {
+				tSr[j][i].nVal = tIn[i].nVal;
+			}
+
 			for(j = -1; j <= 1; j++) {
 				/* upper row */
-				nIdx[(j + 2) * nPair + i] = nIdx[i] - nW + j;
-				/* [nPair]...[2*nPair-1] = upper left pixel */
-				/* [2*nPair]...[3*nPair-1] = upper middle pixel */
-				/* [3*nPair]...[4*nPair-1] = upper right pixel */
+				tSr[j + 1][i].nIdx = tIn[i].nIdx - nW + j;
+				/* tSr[0][i].nIdx = tIn[i].nIdx - nW - 1; */
+				/* tSr[1][i].nIdx = tIn[i].nIdx - nW; */
+				/* tSr[2][i].nIdx = tIn[i].nIdx - nW + 1; */
 
 				/* lower row */
-				nIdx[(j + 7) * nPair + i] = nIdx[i] + nW + j;
-				/* [6*nPair]...[7*nPair-1] = lower left pixel */
-				/* [7*nPair]...[8*nPair-1] = lower middle pixel */
-				/* [8*nPair]...[9*nPair-1] = lower right pixel */
+				tSr[j + 6][i].nIdx = tIn[i].nIdx + nW + j;
+				/* tSr[5][i].nIdx = tIn[i].nIdx + nW - 1; */
+				/* tSr[6][i].nIdx = tIn[i].nIdx + nW; */
+				/* tSr[7][i].nIdx = tIn[i].nIdx + nW + 1; */
 			}
 			/* middle row */
-			nIdx[4 * nPair + i] = nIdx[i] - 1;
-			nIdx[5 * nPair + i] = nIdx[i] + 1;
-			/* [4*nPair]...[5*nPair-1] = middle left pixel */
-			/* [5*nPair]...[6*nPair-1] = middle right pixel */
+			tSr[3][i].nIdx = tIn[i].nIdx - 1;
+			tSr[4][i].nIdx = tIn[i].nIdx + 1;
 		}
-
-		/* sort index array */
-		qsort(nIdx, BOX_SIZE * nPair, sizeof(int), compInt);
-
-for(i = 0; i<9*nPair; i++) {
-	printf("$$ %d\n", nIdx[i]);
-}
 
 	}
 
