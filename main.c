@@ -116,7 +116,10 @@ for(i = 0; i<9*nPair; i++) {
 
 		/* iterate over sorted index array */
 		for(i = 0; i < BOX_SIZE * nPair; i++) {
-
+			if(nIdx[i] < 0 || nIdx[i] == nIdx[i - 1]) {
+				/* if index is negative, or the same as the privious */
+				continue;
+			}
 		}
 
 
