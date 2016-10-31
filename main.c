@@ -114,6 +114,12 @@ for(i = 0; i<9*nPair; i++) {
 	printf("$$ %d\n", nIdx[i]);
 }
 
+		/* iterate over sorted index array */
+		for(i = 0; i < BOX_SIZE * nPair; i++) {
+
+		}
+
+
 	}
 
 	
