@@ -88,8 +88,8 @@ int main() {
 	RLP tIn[MAX_PAIR];
 	/* index array */
 	int nIdx[MAX_PAIR * BOX_SIZE];
-	/* last index number in the index array */
-	int nLastIdx;
+	/* last indices number in the index array */
+	int nBaseIdx, nLastIdx;
 	/* last edge value in the composition of output */
 	int nLastEdge;
 
@@ -161,44 +161,44 @@ printf("- %d %d\n", tIn[nPair].nVal, tIn[nPair].nPos);
 		/* sort index array */
 		qsort(nIdx, BOX_SIZE * nPair, sizeof(int), compInt);
 
-for(i = 0; i<9*nPair; i++) {
-	printf("$$ %d\n", nIdx[i]);
-}
-		
-		/* initialize the last index */
+		/* initialize the last indices */
+		nBaseIdx = 0;
 		nLastIdx = 0;
 		/* initialize the last edge, as non-existent */
 		nLastEdge = -1;
 		/* iterate over sorted index array */
-		for(i = 0; i < BOX_SIZE * nPair; i++) {
+		for(i = 1; i <= 35; i++) {
 			/* read current index into (nL) */
-			nL = nIdx[i];
-			if(nL < 0 || nL == nLastIdx) {
-				/* if index is zero or negative, or the same as the privious one */
-				continue;
-			} else if(nL > tIn[nPair - 1].nPos) {
-				/* passed the end */
-				break;
-			}
+			nL = i;
+
 			/* new index found */
 			nV = getEdge(nL, tIn, nW, nPair);
-			if(nV != nLastEdge || nL == tIn[nPair - 1].nPos) {
-				/* you've got a new edge or reached to the end of an image,
-				print a single result line */
-				printf("%d %d\n", nV, nL - nLastIdx);
+printf("E %d %d\n", nL, nV);
+			if(nV != nLastEdge) {
+				/* you've got a new edge */
+				if(nLastIdx != 0) {
+					/* unless the very first bit, print a single result line */
+					printf("%d %d\n", nLastEdge, nLastIdx - nBaseIdx);
+				}
 				/* update edge value */
 				nLastEdge = nV;
-				/* update last index */
+				/* update last indices */
+				nBaseIdx = nLastIdx;
 				nLastIdx = nL;
 			}
+
+			/* when you've reached the end of an image, print the last line of result */
+			if(nL == tIn[nPair - 1].nPos) {
+				printf("%d %d\n", nV, nL - nBaseIdx);	
+				/* quit the for loop */
+				break;
+			}
+
 			/* if the new edge value is the same as before, don't count, do nothing */
 			/* keep the last index (nLastIdx) and edge value */
 		}
 		/* print end of an image */
 		printf("0 0\n");
-
 	}
-
-	
 	return 0;
 }
