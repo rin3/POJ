@@ -204,9 +204,6 @@ printf("- %d %d\n", tIn[nPair].nVal, tIn[nPair].nPos);
 		/* sort index array */
 		qsort(nIdx, BOX_SIZE * nPair, sizeof(int), compInt);
 
-for(i = 0; i<9*nPair; i++) {
-	printf("$ %d\n", nIdx[i]);
-}
 		/* initialize the last indices */
 		nBaseIdx = 0;
 		nLastIdx = 0;
@@ -223,12 +220,12 @@ for(i = 0; i<9*nPair; i++) {
 
 			/* new index found */
 			nV = getEdge(nL, tIn, nW, nPair);
-/*printf("D- %d %d\n", nL, nV);*/
+printf("E %d %d\n", nL, nV);
 			if(nV != nLastEdge) {
 				/* you've got a new edge */
 				if(nLastIdx != 0) {
 					/* unless the very first bit, print a single result line */
-					printf("%d %d\n", nLastEdge, nLastIdx - nBaseIdx);
+					printf("%d %d - %d %d\n", nLastEdge, nLastIdx - nBaseIdx, nBaseIdx, nLastIdx);
 				}
 				/* update edge value */
 				nLastEdge = nV;
