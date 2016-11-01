@@ -26,6 +26,53 @@ int compInt(const void* pa, const void* pb) {
 	return (*(int*)pa - *(int*)pb);
 }
 
+/* get pixel value in the input image */
+int getValue(int _nIdx, RLP* _tIn) {
+	/* initialize index */
+	int n = 0;
+
+	while(TRUE) {
+		if(_nIdx > _tIn[n].nPos) {
+			/* given index is bigger than the one in the array element */
+			++n;
+			continue;
+		}
+		return _tIn[n].nVal;
+	}
+}
+
+/* compute edge from 1-based index */
+int getEdge(int _nIdx, RLP* _tIn, int _nW, int _nPair) {
+	/* initialize the edge */
+	int nE = 0;
+	/* temporary */
+	int i, t;
+	/* box array */
+	int nBox[8];
+
+	nBox[0] = _nIdx - 1;		/* left */
+	nBox[1] = nBox[0] + 2;		/* right */
+	nBox[2] = nBox[0] - _nW;	/* upper left */
+	nBox[3] = nBox[2] + 1;		/* upper center */
+	nBox[4] = nBox[3] + 1;		/* upper right */
+	nBox[5] = nBox[0] + _nW;	/* lower left */
+	nBox[6] = nBox[2] + 1;		/* lower center */
+	nBox[7] = nBox[3] + 1;		/* lower right */
+
+	/* compute max pixel value difference over the box */
+	for(i = 0; i < 8; i++) {
+		if(nBox[i] > 0 && nBox[i] <= _tIn[_nPair - 1].nPos) {
+			t = abs(getValue(nBox[i], _tIn) - getValue(_nIdx, _tIn));
+			if(t > nE) {
+				nE = t;
+			}
+		}
+	}
+
+	/* return max difference */
+	return nE;
+}
+
 /* main */
 int main() {
 	/* iterators */
@@ -41,6 +88,10 @@ int main() {
 	RLP tIn[MAX_PAIR];
 	/* index array */
 	int nIdx[MAX_PAIR * BOX_SIZE];
+	/* last index number in the index array */
+	int nLastIdx;
+	/* last edge value in the composition of output */
+	int nLastEdge;
 
 	/*--- start ---*/
 
@@ -113,15 +164,38 @@ printf("- %d %d\n", tIn[nPair].nVal, tIn[nPair].nPos);
 for(i = 0; i<9*nPair; i++) {
 	printf("$$ %d\n", nIdx[i]);
 }
-
+		
+		/* initialize the last index */
+		nLastIdx = 0;
+		/* initialize the last edge, as non-existent */
+		nLastEdge = -1;
 		/* iterate over sorted index array */
 		for(i = 0; i < BOX_SIZE * nPair; i++) {
-			if(nIdx[i] < 0 || nIdx[i] == nIdx[i - 1]) {
-				/* if index is negative, or the same as the privious */
+			/* read current index into (nL) */
+			nL = nIdx[i];
+			if(nL < 0 || nL == nLastIdx) {
+				/* if index is zero or negative, or the same as the privious one */
 				continue;
+			} else if(nL > tIn[nPair - 1].nPos) {
+				/* passed the end */
+				break;
 			}
+			/* new index found */
+			nV = getEdge(nL, tIn, nW, nPair);
+			if(nV != nLastEdge || nL == tIn[nPair - 1].nPos) {
+				/* you've got a new edge or reached to the end of an image,
+				print a single result line */
+				printf("%d %d\n", nV, nL - nLastIdx);
+				/* update edge value */
+				nLastEdge = nV;
+				/* update last index */
+				nLastIdx = nL;
+			}
+			/* if the new edge value is the same as before, don't count, do nothing */
+			/* keep the last index (nLastIdx) and edge value */
 		}
-
+		/* print end of an image */
+		printf("0 0\n");
 
 	}
 
