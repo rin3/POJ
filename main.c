@@ -46,26 +46,69 @@ int getEdge(int _nIdx, RLP* _tIn, int _nW, int _nPair) {
 	/* initialize the edge */
 	int nE = 0;
 	/* temporary */
-	int i, t;
-	/* box array */
-	int nBox[8];
+	int t;
 
-	nBox[0] = _nIdx - 1;		/* left */
-	nBox[1] = nBox[0] + 2;		/* right */
-	nBox[2] = nBox[0] - _nW;	/* upper left */
-	nBox[3] = nBox[2] + 1;		/* upper center */
-	nBox[4] = nBox[3] + 1;		/* upper right */
-	nBox[5] = nBox[0] + _nW;	/* lower left */
-	nBox[6] = nBox[2] + 1;		/* lower center */
-	nBox[7] = nBox[3] + 1;		/* lower right */
+	/* upper middle */
+	if(_nIdx > _nW) {
+		t = abs(getValue(_nIdx - _nW, _tIn) - getValue(_nIdx, _tIn));
+		if(t > nE) {
+			nE = t;
+		}
+	}
 
-	/* compute max pixel value difference over the box */
-	for(i = 0; i < 8; i++) {
-		if(nBox[i] > 0 && nBox[i] <= _tIn[_nPair - 1].nPos) {
-			t = abs(getValue(nBox[i], _tIn) - getValue(_nIdx, _tIn));
-			if(t > nE) {
-				nE = t;
-			}
+	/* lower middle */
+	if(_nIdx + _nW <= _tIn[_nPair - 1].nPos) {
+		t = abs(getValue(_nIdx + _nW, _tIn) - getValue(_nIdx, _tIn));
+		if(t > nE) {
+			nE = t;
+		}
+	}
+
+	/* middle left */
+	if(_nIdx % _nW != 1) {
+		t = abs(getValue(_nIdx - 1, _tIn) - getValue(_nIdx, _tIn));
+		if(t > nE) {
+			nE = t;
+		}
+	}
+
+	/* middle right */
+	if(_nIdx % _nW != 0) {
+		t = abs(getValue(_nIdx + 1, _tIn) - getValue(_nIdx, _tIn));
+		if(t > nE) {
+			nE = t;
+		}
+	}
+
+	/* upper left */
+	if(_nIdx % _nW != 1 && _nIdx - _nW - 1 > 0) {
+		t = abs(getValue(_nIdx - _nW - 1, _tIn) - getValue(_nIdx, _tIn));
+		if(t > nE) {
+			nE = t;
+		}
+	}
+
+	/* upper right */
+	if(_nIdx % _nW != 0 && _nIdx - _nW + 1 > 0) {
+		t = abs(getValue(_nIdx - _nW + 1, _tIn) - getValue(_nIdx, _tIn));
+		if(t > nE) {
+			nE = t;
+		}
+	}
+
+	/* lower left */
+	if(_nIdx % _nW != 1 && _nIdx + _nW - 1 <= _tIn[_nPair - 1].nPos) {
+		t = abs(getValue(_nIdx + _nW - 1, _tIn) - getValue(_nIdx, _tIn));
+		if(t > nE) {
+			nE = t;
+		}
+	}
+
+	/* lower right */
+	if(_nIdx % _nW != 0 && _nIdx + _nW + 1 <= _tIn[_nPair - 1].nPos) {
+		t = abs(getValue(_nIdx + _nW + 1, _tIn) - getValue(_nIdx, _tIn));
+		if(t > nE) {
+			nE = t;
 		}
 	}
 
@@ -161,19 +204,26 @@ printf("- %d %d\n", tIn[nPair].nVal, tIn[nPair].nPos);
 		/* sort index array */
 		qsort(nIdx, BOX_SIZE * nPair, sizeof(int), compInt);
 
+for(i = 0; i<9*nPair; i++) {
+	printf("$ %d\n", nIdx[i]);
+}
 		/* initialize the last indices */
 		nBaseIdx = 0;
 		nLastIdx = 0;
 		/* initialize the last edge, as non-existent */
 		nLastEdge = -1;
 		/* iterate over sorted index array */
-		for(i = 1; i <= 35; i++) {
+		for(i = 0; i < BOX_SIZE * nPair; i++) {
 			/* read current index into (nL) */
-			nL = i;
+			nL = nIdx[i];
+			if(nL < 0 || (i > 0 && nL == nIdx[i - 1])) {
+				/* if index is zero or negative, or the same as the privious one */
+				continue;
+			}
 
 			/* new index found */
 			nV = getEdge(nL, tIn, nW, nPair);
-printf("E %d %d\n", nL, nV);
+/*printf("D- %d %d\n", nL, nV);*/
 			if(nV != nLastEdge) {
 				/* you've got a new edge */
 				if(nLastIdx != 0) {
@@ -184,8 +234,8 @@ printf("E %d %d\n", nL, nV);
 				nLastEdge = nV;
 				/* update last indices */
 				nBaseIdx = nLastIdx;
-				nLastIdx = nL;
 			}
+				nLastIdx = nL;
 
 			/* when you've reached the end of an image, print the last line of result */
 			if(nL == tIn[nPair - 1].nPos) {
