@@ -15,7 +15,7 @@
 typedef struct RLP_t {
 	/* value */
 	int nVal;
-	/* position */
+	/* cumlative position */
 	int nPos;
 } RLP;
 
@@ -33,7 +33,7 @@ int getValue(int _nIdx, RLP* _tIn) {
 
 	while(TRUE) {
 		if(_nIdx > _tIn[n].nPos) {
-			/* given index is bigger than the one in the array element */
+			/* given index is bigger than the position in the array element */
 			++n;
 			continue;
 		}
@@ -41,7 +41,7 @@ int getValue(int _nIdx, RLP* _tIn) {
 	}
 }
 
-/* compute edge from 1-based index */
+/* compute edge from 1-based index position */
 int getEdge(int _nIdx, RLP* _tIn, int _nW, int _nPair) {
 	/* initialize the edge */
 	int nE = 0;
@@ -130,10 +130,10 @@ int main() {
 	/* RLP array */
 	RLP tIn[MAX_PAIR];
 	/* index array */
-	int nIdx[MAX_PAIR * BOX_SIZE];
-	/* last indices number in the index array */
+	int nIdx[MAX_PAIR * BOX_SIZE + 4];
+	/* last indices in the index array */
 	int nBaseIdx, nLastIdx;
-	/* last edge value in the composition of output */
+	/* last edge value for the composition of output */
 	int nLastEdge;
 
 	/*--- start ---*/
@@ -174,35 +174,42 @@ int main() {
 
 			/* fill index array, w/input image, in segment 0 to (nPair-1) */
 			nIdx[nPair] = tIn[nPair].nPos;
-printf("- %d %d\n", tIn[nPair].nVal, tIn[nPair].nPos);
+
 			/* increment RLP array index */
 			++nPair;
 		}
 
-		/* fill index array w/surrounding pixels */
+		/* fill index array for surrounding pixels */
 		for(i = 0; i < nPair; i++) {
 			for(j = -1; j <= 1; j++) {
 				/* upper row */
-				nIdx[(j + 2) * nPair + i] = nIdx[i] - nW + j;
-				/* [nPair]...[2*nPair-1] = upper left pixel */
+				nIdx[(j + 2) * nPair + i] = nIdx[i] + nW + j;
+				/* [nPair]...[2*nPair-1] = upper right pixel */
 				/* [2*nPair]...[3*nPair-1] = upper middle pixel */
-				/* [3*nPair]...[4*nPair-1] = upper right pixel */
+				/* [3*nPair]...[4*nPair-1] = upper left pixel */
 
 				/* lower row */
-				nIdx[(j + 7) * nPair + i] = nIdx[i] + nW + j;
-				/* [6*nPair]...[7*nPair-1] = lower left pixel */
+				nIdx[(j + 7) * nPair + i] = nIdx[i] - nW + j;
+				/* [6*nPair]...[7*nPair-1] = lower right pixel */
 				/* [7*nPair]...[8*nPair-1] = lower middle pixel */
-				/* [8*nPair]...[9*nPair-1] = lower right pixel */
+				/* [8*nPair]...[9*nPair-1] = lower left pixel */
 			}
 			/* middle row */
 			nIdx[4 * nPair + i] = nIdx[i] - 1;
 			nIdx[5 * nPair + i] = nIdx[i] + 1;
-			/* [4*nPair]...[5*nPair-1] = middle left pixel */
-			/* [5*nPair]...[6*nPair-1] = middle right pixel */
+			/* [4*nPair]...[5*nPair-1] = middle right pixel */
+			/* [5*nPair]...[6*nPair-1] = middle left pixel */
+		}
+
+		/* and, four additional points */
+		/* +1, nW-1, nW, nW+1 */
+		nIdx[BOX_SIZE * nPair] = 1;
+		for(i = 1; i <= 3; i++) {
+			nIdx[BOX_SIZE * nPair + i] = nW + i - 2;
 		}
 
 		/* sort index array */
-		qsort(nIdx, BOX_SIZE * nPair, sizeof(int), compInt);
+		qsort(nIdx, BOX_SIZE * nPair + 4, sizeof(int), compInt);
 
 		/* initialize the last indices */
 		nBaseIdx = 0;
@@ -210,27 +217,32 @@ printf("- %d %d\n", tIn[nPair].nVal, tIn[nPair].nPos);
 		/* initialize the last edge, as non-existent */
 		nLastEdge = -1;
 		/* iterate over sorted index array */
-		for(i = 1; i <= 35; i++) {
+		for(i = 0; i < BOX_SIZE * nPair + 4; i++) {
 			/* read current index into (nL) */
-			nL = i;
+			nL = nIdx[i];
+			if(nL < 0 || (i > 0 && nL == nIdx[i - 1])) {
+				/* if index is zero or negative, or the same as the privious one */
+				continue;
+			}
 
-			/* new index found */
+			/* new index found, compute edge */
 			nV = getEdge(nL, tIn, nW, nPair);
-printf("E %d %d\n", nL, nV);
+
+			/* produce output */
 			if(nV != nLastEdge) {
 				/* you've got a new edge */
 				if(nLastIdx != 0) {
 					/* unless the very first bit, print a single result line */
-					printf("%d %d - %d %d\n", nLastEdge, nLastIdx - nBaseIdx, nBaseIdx, nLastIdx);
+					printf("%d %d\n", nLastEdge, nLastIdx - nBaseIdx);
 				}
 				/* update edge value */
 				nLastEdge = nV;
 				/* update last indices */
 				nBaseIdx = nLastIdx;
 			}
-				nLastIdx = nL;
+			nLastIdx = nL;
 
-			/* when you've reached the end of an image, print the last line of result */
+			/* when you've reached the end of an image, print the last line */
 			if(nL == tIn[nPair - 1].nPos) {
 				printf("%d %d\n", nV, nL - nBaseIdx);	
 				/* quit the for loop */
