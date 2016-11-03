@@ -3,12 +3,21 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define MAX_STAMPS      25
+/* maximum number of types */
+#define MAX_TYPES	25
 
-/* compare function for qsort */
-int compInt(const void* pa, const void* pb) {
+/* stamps */
+typedef struct Stamps_t {
+	/* nominal value */
+	int nVal;
+	/* number of types of the same value */
+	int nTyp;
+} Stamps;
+
+/* qsort compare function: by struct member (nVal) */
+int compStampVal(const void* pa, const void* pb) {
 	/* simple integer comparison */
-	return (*(int*)pa - *(int*)pb);
+	return (((Stamps*)pa)->nVal - ((Stamps*)pb)->nVal);
 }
 
 int main() {
@@ -16,23 +25,23 @@ int main() {
     int i;
     int nN;
     /* array: available stamps */
-    int nStamps[MAX_STAMPS];
+    Stamps tSt[MAX_TYPES];
     /* the number of stamps */
-    int nNumStamps;
+    int nTotalTyp;
     /* total value when each different stamp added */
-    int nTotalEa; 
+    int nTotalVal; 
 
     /*--- start ---*/
 
-    /* reset the number of stamps */
-    nNumStamps = 0;
+    /* reset the total number of types */
+    nTotalTyp = 0;
     /* read from stdin */
     while(scanf("%d", &nN) != EOF) {
         /* start of the first line of input */
         /* store the first element into the array */
 
-        nStamps[nNumStamps] = nN;
-        ++nNumStamps;
+        tSt[nTotalTyp].nVal = nN;
+        ++nTotalTyp;
 
         /* read the rest of the first line */
         while(scanf("%d", &nN) == 1) {
@@ -42,18 +51,22 @@ int main() {
             }
 
             /* store an element into the array */
-            nStamps[nNumStamps] = nN;
-            ++nNumStamps;
+            tSt[nTotalTyp].nVal = nN;
+            ++nTotalTyp;
         }
         /* first line has been read */
 
         /* sort the stamp array */
-        qsort(nStamps, nNumStamps, sizeof(int), compInt);
+        qsort(tSt, nTotalTyp, sizeof(Stamps), compStampVal);
+
+
+
+
 
         /* calculate total value when each different stamp is added */
-        nTotalEa = 0;
-        for(i = 0; i < nNumStamps; i++) {
-            nTotalEa += nStamps[i];
+        nTotalVal = 0;
+        for(i = 0; i < nTotalTyp; i++) {
+            nTotalVal += tSt[i].nVal;
         }
 
         /* read the second line */
@@ -67,15 +80,15 @@ int main() {
             /*--- solution for each customer ---*/
 
             /* can all types included? */
-            if(nN == nTotalEa) {
+            if(nN == nTotalVal) {
                 /* exactly match for one each of all stamps */
                 /* job done: simple answer */
-                printf("%d (%d):", nN, nNumStamps);
-                for(i = 0; i < nNumStamps; i++) {
-                    printf(" %d", nStamps[i]);
+                printf("%d (%d):", nN, nTotalTyp);
+                for(i = 0; i < nTotalTyp; i++) {
+                    printf(" %d", tSt[i].nVal);
                 }
                 printf("\n");
-            } else if(nN > nTotalEa) {
+            } else if(nN > nTotalVal) {
 
             } else {
                 /* nN < nTotalEa */
@@ -100,7 +113,7 @@ print
 
         /* a set of problem has been solved */
         /* reset variables */
-        nNumStamps = 0;
+        nTotalTyp = 0;
     }
 
     return 0;
